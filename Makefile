@@ -1,82 +1,108 @@
-SRCS = ft_memset.c		\
-		ft_bzero.c		\
-		ft_memcpy.c		\
-		ft_memmove.c 	\
-		ft_memchr.c		\
-		ft_memcmp.c		\
-		ft_strlen.c		\
-		ft_isalpha.c 	\
-		ft_isdigit.c		\
-		ft_isalnum.c		\
-		ft_isascii.c		\
-		ft_isprint.c		\
-		ft_toupper.c		\
-		ft_tolower.c		\
-		ft_strchr.c		\
-		ft_strrchr.c		\
-		ft_strncmp.c		\
-		ft_strlcpy.c		\
-		ft_strlcat.c		\
-		ft_strnstr.c		\
-		ft_atoi.c		\
-		ft_calloc.c		\
-		ft_strdup.c		\
-		ft_substr.c		\
-		ft_strjoin.c 	\
-		ft_strtrim.c		\
-		ft_split.c		\
-		ft_itoa.c		\
-		ft_strmapi.c		\
-		ft_putchar_fd.c	\
-		ft_putstr_fd.c	\
-		ft_putendl_fd.c	\
-		ft_striteri.c	\
-		ft_putnbr_fd.c
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    Makefile                                           :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: rrotirot <marvin@42.fr>                    +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2022/11/14 17:05:17 by rrotirot          #+#    #+#              #
+#    Updated: 2022/11/14 17:05:21 by rrotirot         ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
 
-SRCSB =	ft_lstnew.c			\
-		ft_lstadd_front.c	\
-		ft_lstsize.c		\
-		ft_lstlast.c		\
-		ft_lstadd_back.c	\
-		ft_lstclear.c		\
-		ft_lstdelone.c		\
-		ft_lstiter.c		\
-		ft_lstmap.c			\
-		$(SRCS)
-NAME = libft.a
+#Standard
 
-OBJS_DIR = objs/
-OBJS = $(SRCS:.c=.o)
-OBJECTS_PREFIXED = $(addprefix $(OBJS_DIR), $(OBJS))
+NAME		=	libft.a
+INCLUDES	=	include/
+SRCS_DIR 	=	src/
+OBJS_DIR	=	obj/
+CC			=	gcc
+CFLAGS		=	-Wall -Werror -Wextra -I
+RM			=	rm -f
+AR			=	ar rcs
 
-OBJSB = $(SRCSB:.c=.o)
-OBJECTS_BONUS_PREFIXED = $(addprefix $(OBJS_DIR), $(OBJSB))
+#Colors
 
-CC = gcc
+DEF_COLOR = \033[0;39m
+GRAY = \033[0;90m
+RED = \033[0;91m
+GREEN = \033[0;92m
+YELLOW = \033[0;93m
+BLUE = \033[0;94m
+MAGENTA = \033[0;95m
+CYAN = \033[0;96m
+WHITE = \033[0;97m
 
-CC_FLAGS = -Wall -Wextra -Werror
+#Sources
 
-$(OBJS_DIR)%.o : %.c libft.h
-	@mkdir -p $(OBJS_DIR)
-	@echo "Compiling: $<"
-	@gcc $(CC_FLAGS) -c $< -o $@
+FTIS_DIR	=	ft_is/
+FTIS		=	ft_isalnum ft_isalpha ft_isascii ft_isdigit ft_isprint
 
-$(NAME): $(OBJECTS_PREFIXED)
-	@ar r $(NAME) $(OBJECTS_PREFIXED)
-	@echo "Libft Done !"
+FTMEM_DIR	=	ft_mem/
+FTMEM		=	ft_bzero ft_calloc ft_memchr ft_memcmp ft_memmove ft_memset
 
-all: $(NAME)
+FTPUT_DIR	=	ft_put/
+FTPUT		=	ft_putchar_fd ft_putendl_fd ft_putnbr_fd ft_putstr_fd
+
+FTTO_DIR	=	ft_to/
+FTTO		=	ft_atoi ft_itoa ft_tolower ft_toupper
+
+FTSTR_DIR	=	ft_str/
+FTSTR		=	ft_split ft_strchr ft_strdup ft_striteri ft_strjoin \
+				ft_strlcat ft_strlcpy ft_strlen ft_strmapi ft_strncmp \
+				ft_strnstr ft_strrchr ft_strtrim ft_substr
+
+FTLST_DIR	=	ft_lst/
+FTLST		=	ft_lstadd_back ft_lstadd_front ft_lstclear ft_lstdelone \
+				ft_lstiter ft_lstlast ft_lstmap ft_lstnew ft_lstsize
+
+SRC_FILES+=$(addprefix $(FTIS_DIR),$(FTIS))
+SRC_FILES+=$(addprefix $(FTMEM_DIR),$(FTMEM))
+SRC_FILES+=$(addprefix $(FTPUT_DIR),$(FTPUT))
+SRC_FILES+=$(addprefix $(FTTO_DIR),$(FTTO))
+SRC_FILES+=$(addprefix $(FTSTR_DIR),$(FTSTR))
+SRC_FILES+=$(addprefix $(FTLST_DIR),$(FTLST))
+
+SRCS 		= 	$(addprefix $(SRCS_DIR), $(addsuffix .c, $(SRC_FILES)))
+OBJS 		= 	$(addprefix $(OBJS_DIR), $(addsuffix .o, $(SRC_FILES)))
+
+###
+
+OBJSF		=	.cache_exists
+
+all:		$(NAME)
+
+$(NAME):	$(OBJS)
+			@$(AR) $(NAME) $(OBJS)
+			@ranlib $(NAME)
+			@echo "$(GREEN)Libft compiled!$(DEF_COLOR)"
+
+$(OBJS_DIR)%.o : $(SRCS_DIR)%.c | $(OBJSF)
+			@echo "$(YELLOW)Compiling: $< $(DEF_COLOR)"
+			@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+
+$(OBJSF):
+			@mkdir -p $(OBJS_DIR)
+			@mkdir -p $(OBJS_DIR)$(FTIS_DIR)
+			@mkdir -p $(OBJS_DIR)$(FTMEM_DIR)
+			@mkdir -p $(OBJS_DIR)$(FTPUT_DIR)
+			@mkdir -p $(OBJS_DIR)$(FTTO_DIR)
+			@mkdir -p $(OBJS_DIR)$(FTSTR_DIR)
+			@mkdir -p $(OBJS_DIR)$(FTLST_DIR)
 
 clean:
-	rm -rf $(OBJS_DIR)
+			@$(RM) -rf $(OBJS_DIR)
+			@$(RM) -f $(OBJSF)
+			@echo "$(BLUE)libft objects files cleaned!$(DEF_COLOR)"
 
-fclean: clean
-	rm -f $(NAME)
+fclean:		clean
+			@$(RM) -f $(NAME)
+			@echo "$(CYAN)libft executable files cleaned!$(DEF_COLOR)"
 
-re: fclean all
+re:			fclean all
+			@echo "$(GREEN)Cleaned and rebuilt everything for libft!$(DEF_COLOR)"
 
-bonus: $(OBJECTS_BONUS_PREFIXED)
-	@ar r $(NAME) $(OBJECTS_BONUS_PREFIXED)
-	@echo "Libft Bonus Done !"
+norm:
+	@norminette $(SRCS) $(INCLUDES) | grep -v Norme -B1 || true
 
-.PHONY: all clean fclean re rebonus bonus
+.PHONY:		all clean fclean re norm
